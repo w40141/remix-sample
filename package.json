@@ -10,7 +10,8 @@
 		"start": "remix-serve build/server/index.js",
 		"typecheck": "tsc",
 		"lint": "biome lint --write .",
-		"format": "biome format --write ."
+		"format": "biome format --write .",
+		"check": "biome check --write ."
 	},
 	"dependencies": {
 		"@remix-run/node": "*",
