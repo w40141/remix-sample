@@ -1,17 +1,21 @@
+import { json } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
 import type { FunctionComponent } from "react";
-import type { ContactRecord } from "../data";
+import invariant from "tiny-invariant";
+import { type ContactRecord, getContact } from "../data";
 
-import { Form } from "@remix-run/react";
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+	invariant(params.contactId, "No contactId provided");
+	const contact = await getContact(params.contactId);
+	if (!contact) {
+		throw new Response("NotFound", { status: 404 });
+	}
+	return json({ contact });
+};
 
 export default function Contact() {
-	const contact = {
-		first: "Your",
-		last: "Name",
-		avatar: "https://placekitten.com/200/200",
-		twitter: "your_handle",
-		notes: "Some notes about you.",
-		favorite: true,
-	};
+	const { contact } = useLoaderData<typeof loader>();
 
 	return (
 		<div id="contact">
@@ -53,12 +57,12 @@ export default function Contact() {
 					<Form
 						action="destrory"
 						method="post"
-						onSubmit={(event) => {
+						onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
 							const response = confirm(
 								"Please confirm you want to delete this record.",
 							);
 							if (!response) {
-								event.preventDefault();
+								e.preventDefault();
 							}
 						}}
 					>
